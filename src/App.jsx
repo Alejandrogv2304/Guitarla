@@ -6,10 +6,20 @@ import { db } from './data/db';
 
 function App() {
   
-  const [data, setData]= useState(db)
-  const [cart, setCart]= useState([])
+  //Para manejar el localStorage
+  const initialCart = () =>{
+  const localStorageCart = localStorage.getItem('cart')
+  return localStorageCart ? JSON.parse(localStorageCart) : []
+  }
+
+  const [data]= useState(db)
+  const [cart, setCart]= useState(initialCart)
   const MAX_ITEMS= 5 //Máximo de guitarras que el usuario puede seleccionar
   const MIN_ITEMS= 1
+
+  useEffect(()=>{
+    localStorage.setItem('cart', JSON.stringify(cart))
+  },[cart])
   function addToCart(item){
 
     const itemExits= cart.findIndex(guitar=>guitar.id===item.id)
@@ -22,7 +32,6 @@ function App() {
       item.quantity = 1
       setCart([...cart, item])
     }
-   
 }
 
 function removeFromCart(id){
@@ -57,6 +66,11 @@ function decreaseQuantity(id){
   setCart(updatedCart)
  }
 
+ function clearCart(){
+  setCart([])
+ }
+
+ 
   return (
     <>
      <Header 
@@ -64,6 +78,7 @@ function decreaseQuantity(id){
      removeFromCart={removeFromCart}
      increaseQuantity={increaseQuantity}
      decreaseQuantity={decreaseQuantity}
+     clearCart={clearCart}
      />
     
      <main className="container-xl mt-5">
